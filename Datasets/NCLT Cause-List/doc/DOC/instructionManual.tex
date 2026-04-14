@@ -1,0 +1,266 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs,caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{tabularx}
+\usepackage[nottoc]{tocbibind} 
+\usepackage{amssymb,amsmath}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx,grffile}
+\usepackage{longtable} 
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\hypersetup{unicode=true, pdftitle={NCLT Cause Lists Codebook},
+  pdfauthor={Ami Dagli and Rahul Somani}, pdfborder={0 0 0}, breaklinks=true}
+\urlstyle{same} % don't use monospace font for urls
+
+% Commands for the FRG note look -- Do Not Change, Do Not Add -- %
+
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+  \usepackage{parskip} }{% else
+  \setlength{\parindent}{0pt} \setlength{\parskip}{6pt plus 2pt minus
+    1pt} } \setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else \let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}} \fi
+\ifx\subparagraph\undefined\else \let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}} \fi
+
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+\newlength{\outermargingap}
+\setlength{\outermargingap}{1in} \newlength{\textwidthorig}
+\setlength{\textwidthorig}{\textwidth}
+\renewcommand{\baselinestretch}{1.1}
+
+\usepackage{datetime}
+\renewcommand{\dateseparator}{-} \newcommand{\todayiso}{\the\year
+  \dateseparator \the\month \dateseparator \the\day}
+
+% Commands for the title page of the FRG note look starts below
+% Put in the title, authors and date here.
+
+\begin{document}
+
+\begin{titlepage}
+
+
+  \vspace*{\stretch{1}}
+  \parbox{\textwidthorig}{ \hrule % For horizontal lines
+    \vspace{\baselineskip}
+    \center{\Large Instruction manual for the FRG NCLT cause-list data-set}\\[1ex]
+    July 2020 \vspace{\baselineskip} % Line spacing
+    \hrule % For horizontal lines
+  }
+
+  \vspace{\stretch{1}}
+  \vspace{\stretch{1}}
+  
+  \parbox{\textwidthorig}{ \center
+    Finance Research Group\\[1ex]
+    Mumbai}
+\end{titlepage}
+
+\newpage
+
+\section{System requirements}
+
+The ``FRG NCLT cause-list database system'' uses a set of Python and R programs. The python programs are first used to web-scrape data from NCLT court-bench websites to create a directory of cause-list files called \texttt{NCLT-DATA}. This is a time-consuming part of the system which is fraught with missteps and failures because of the lack of reliable access to the NCLT websites. This requires a dedicated system and dedicated manpower to follow-up when the access fails to repeat steps until the complete data is acquired
+
+Second, the R programs then extract data to create an aggregated research-ready cause-list data-set in a file called \texttt{frg\_nclt\_cause-list\_dataset.csv}.  Once the source cause-list data is extracted from the NCLT websites in the first step, this is an easy, low-cost and reliable process.
+
+The Python programs required include:
+\begin{enumerate}
+\item Python version 3.7 or higher.
+\item Selenium Virtual Browser for either Geckodriver or Firefox.
+\item System libraries including \texttt{libcurl4-openssl-dev, libxml2-dev, openssl, libssl-dev, libmagick++-dev}.
+\end{enumerate}
+
+The R programs required include:
+\begin{enumerate}
+\item R version 3.6.2 (or higher)
+\item R packages:
+
+  $\bullet$ tidyverse
+  $\bullet$ httr
+  $\bullet$ rvest
+  $\bullet$ openssl
+  $\bullet$ xml2
+  $\bullet$ dplyr
+  $\bullet$ glue
+  $\bullet$ purrr
+  $\bullet$ stringr
+  $\bullet$ readr
+  $\bullet$ optparse
+  $\bullet$ ggplot2
+  $\bullet$ tidyr
+  $\bullet$ data.table
+  $\bullet$ knitr
+  $\bullet$ kableExtra
+  $\bullet$ magick
+  $\bullet$ rmarkdown
+\end{enumerate}
+
+\textbf{NOTE:} This system has been developed and tested for Linux (Debian 10).
+
+\section{Running the system: Creating the directory of cause-list files}
+
+The following commands should be run in the given sequence.
+
+\begin{description}
+\item[Step 1.] Update the file \texttt{benches\_courts\_names.pkl}
+  which stores the list of the current NCLT courts and benches using a
+  Python program: \texttt{\_01\_get\_benches\_courts.py}
+
+  \begin{itemize}
+  \item \textsc{Command}: \texttt{python3
+      \_01\_get\_benches\_courts.py}
+  \item \textsc{Output}: \texttt{benches\_courts\_names.pkl}
+  \end{itemize}
+
+
+\item[Step 2.] Validate the list in
+  \texttt{benches\_courts\_names.pkl} using a Python program
+  \texttt{\_02\_verify\_bench\_courts.py}
+
+  \begin{itemize}
+  \item \textsc{Command}: \texttt{python3
+      \_02\_verify\_bench\_courts.py}
+  \item \textsc{Output}: \texttt{benches\_courts-VALIDATED.pkl}
+  \end{itemize}
+
+  \textsc{Success Indicator:} If
+  \texttt{benches\_courts-VALIDATED.pkl} is not created, re-do
+  \textbf{Step 1} until it gets created. This may need to be done over
+  a staggered period of time to adjust for problems in accessing the
+  SOURCE location.
+
+\item[Step 3.] Scrape URLs for the bench-court combinations listed in
+  \texttt{benches\_courts-VALIDATED.pkl} using a Python program
+  \texttt{\_03\_get\_bench\_court\_urls.py}.
+
+  \begin{itemize}
+  \item \textsc{Command}:\texttt{python3
+      \_03\_get\_bench\_court\_urls.py}
+  \item \textsc{Output}: \texttt{bench\_court\_urls.csv}, \texttt{bench\_court\_skipped.csv}
+  \end{itemize}
+
+  \textsc{Success indicator:}
+
+  If the program is successful, \texttt{bench\_court\_urls.csv} is
+  created.
+
+  If the program is not successful, \texttt{bench\_court\_skipped.csv}
+  is created.
+
+  Repeat this step till \texttt{bench\_court\_urls.csv} is created.
+
+\item[Step 4.] Extract cause-list data for a day from the list of
+  bench-courts in \texttt{bench\_court\_urls.csv} using the Python
+  program \texttt{\_04\_get\_cause\_lists.py}.
+
+  The program uses \texttt{bench\_courts\_url.csv} as the default
+  source for the bench-court list, and requires start date, end date
+  and a path to save the extracted files as input parameters.
+
+  \begin{itemize}
+  \item \textsc{Command}:
+  
+    \texttt{python3 \_04\_get\_cause\_lists.py --start\_date YYYYMMDD
+      --end\_date YYYYMMDD --data\_dir /directory/path/}
+  
+  \item \textsc{Output}: Sub-directories for each bench-court as
+    listed in \texttt{bench\_courts\_url.csv}
+    (e.g. chennai-bench\_court-i), which further contain
+    subdirectories \texttt{data} and \texttt{logs}.
+  \end{itemize}
+
+  \textsc{Success indicator:}
+
+  The \texttt{data} directory will have
+  YYYY-MM-DD\_location-bench\_court-i.csv files for each date between
+  \texttt{start-date} and \texttt{end-date}.
+
+  The \texttt{log} directory will have files starting with
+  \texttt{no\_data\_[bench-court-name].csv} and
+  \texttt{verify\_dates\_[bench-court-name].csv} for missing files.
+
+  If there are files created in \texttt{logs}, these can be used to
+  manually follow up on missing cause-list data files.
+
+\end{description}
+
+
+\section{Running the system: Aggregating cause-list files into the research data-set}
+
+A single data-set of cases listed in the cause-list files across
+bench-courts and days is aggregated into a single file using two R
+programs \texttt{01\_generate\_cpca\_numbers.R} and
+\texttt{02\_generate\_dataset\_from\_cpca\_numbers.R}, which are
+executed in sequence.
+
+
+If the directory where the scraped NCLT cause-list files are stored is
+\texttt{SOURCEPATH}, then the following commands should be run to
+create the NCLT cause-list research data-set:\footnote{The command
+  \texttt{Rscript 01\_generate\_cpca\_numbers.R -h} prints out the
+  list of parameters that the user can set for
+  \texttt{01\_generate\_cpca\_numbers.R -h}
+
+  The command \texttt{Rscript
+    02\_generate\_dataset\_from\_cpca\_numbers.R -h} prints out the
+  list of parameters that can be set for
+  \texttt{02\_generate\_dataset\_from\_cpca\_numbers.R} }
+\begin{enumerate}
+\item \texttt{Rscript 01\_generate\_cpca\_numbers.R --path\_data
+    SOURCEPATH}
+\item \texttt{Rscript 02\_generate\_dataset\_from\_cpca\_numbers.R
+    --path\_data SOURCEPATH --input\_cpca\_file 01\_cpca\_numbers.txt}
+\end{enumerate}
+
+The first command creates the file \texttt{01\_cpca\_numbers.txt} as
+output.
+
+This file is taken as input by the second program to create
+\texttt{frg\_nclt\_causelist\_dataset.csv} which is the final research
+dataset.
+
+The description of the data created and stored in
+\texttt{frg\_nclt\_causelist\_dataset.csv} can be found in the
+\texttt{Codebook} which is generated using the steps in the following
+section.
+
+
+
+\section{Generating the Codebook describing the research data-set}
+
+In order to generate the Codebook which describes the research
+data-set, you will need the following files:
+\texttt{codebook\_doc.Rmd, codebook\_generator.R,
+  codebook\_preprocessor.R}
+
+The command \texttt{Rscript codebook\_generator.R --path\_data
+  SOURCEPATH} will generate the file \texttt{./CODEBOOK/codebook.pdf}
+
+\end{document}

@@ -1,0 +1,4 @@
+var _userway_config = {
+    account: 'KrdYe8TB3h'
+        //   account: process.env.USERWAY_ACCT_ID
+}

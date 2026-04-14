@@ -1,0 +1,6 @@
+instructionManual.tex : Source file to create the instruction manual called instructionManual.pdf
+
+Makefile : makes the PDF of the instruction manual. In order to do this, run the commands "make all" followed by "make clean".
+
+README : this file
+

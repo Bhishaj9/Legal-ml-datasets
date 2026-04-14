@@ -1,0 +1,134 @@
+const liItemsContainer = document.querySelector(".header-content");
+const liItems = document.querySelectorAll(".header-content .navBarDropdowns");
+const dropDownContainer = document.querySelector(
+  ".header-content-wrapper .dropDownDialog-container"
+);
+const backBtn = document.querySelector(
+  ".header-content-wrapper .dropDownDialog-container #backCta"
+);
+const dropDownItems = document.querySelectorAll(
+  ".header-content-wrapper .dropDownDialog"
+);
+const headerContentWrapper = document.querySelector(".header-content-wrapper");
+//searchM
+const searchBtnD = document.querySelector(
+  ".header-content-wrapper .search-icon"
+);
+
+//mediaQuery
+const smMin = window.matchMedia("(min-width: 1023px)");
+let isDesktop = smMin.matches;
+
+liItems.forEach((liItem, index) => {
+  let outerIndex = index;
+  liItem.addEventListener("click", (e) => {
+    liItems.forEach((li, index) => {
+      if (li !== e.currentTarget) {
+        li.classList.remove("selected");
+        dropDownItems[index].classList.remove("show");
+      }
+    });
+    liItem.classList.toggle("selected");
+    dropDownItems[outerIndex].classList.toggle("show");
+    if (navContent.classList.contains("show")) {
+      navContent.classList.remove("show");
+      searchBtnD.classList.remove("navBar__open");
+    }
+    if (isDesktop) {
+      const isVisible = Array.from(dropDownItems).some((dropdown) =>
+        dropdown.classList.contains("show")
+      );
+      document.body.style.overflow = isVisible ? "hidden" : null;
+    }
+    if (!isDesktop) {
+      const isVisible = Array.from(dropDownItems).some((dropdown) =>
+        dropdown.classList.contains("show")
+      );
+      if (isVisible) {
+        headerContentWrapper.style.gridTemplateColumns = "0 1fr";
+      }
+    }
+  });
+});
+
+backBtn.addEventListener("click", () => {
+  dropDownContainer.querySelector(".show").classList.remove("show");
+  liItemsContainer.querySelector(".selected").classList.remove("selected");
+  headerContentWrapper.style.gridTemplateColumns = "1fr 0";
+});
+
+// mobile navbar
+const hamBtn = document.getElementById("hamBtn");
+hamBtn.onclick = () => {
+  hamBtn.classList.toggle("dropdown-open");
+  headerContentWrapper.classList.toggle("slide-in");
+  headerContentWrapper.classList.remove("slide-out");
+  document.body.classList.toggle("no-overflow");
+  document.documentElement.classList.toggle("no-overflow");
+};
+
+//searchDesktop
+if (isDesktop) {
+  searchBtnD.addEventListener("click", () => {
+    const isVisible = Array.from(dropDownItems).some((dropdown) =>
+      dropdown.classList.contains("show")
+    );
+    if (isVisible) {
+      liItems.forEach((li) => li.classList.remove("selected"));
+      dropDownItems.forEach((dropDownItem) =>
+        dropDownItem.classList.remove("show")
+      );
+    }
+    navContent.classList.toggle("show");
+    searchBtnD.classList.toggle("navBar__open");
+  });
+}
+
+//profileTooltip
+const signUpWrapper = document.querySelector(
+  ".header-content-wrapper .sign-up-wrapper"
+);
+const signUpBtn = signUpWrapper.querySelector(".sign-up-btn");
+const profile = signUpWrapper.querySelector("#profile");
+
+//sign up
+signUpBtn.onclick = () => {
+  signUpBtn.remove();
+  profile.style.display = "flex";
+};
+
+const signupButton = document.getElementById("login-btn");
+const profilePicture = document.getElementById("profile-pic");
+
+signupButton.addEventListener("click", function () {
+  // Change the CSS display property to make the profile picture visible
+  profilePicture.style.display = "block";
+  signupButton.style.display = "none";
+});
+
+
+$("#profile").click(function () {
+  $("#" + this.id + "-drop").toggle();
+  $(this).toggleClass("active");
+  $(".default-nav-wrapper").find("li").removeClass("active");
+  $(".default-nav-wrapper").find("a").removeClass("active");
+  $(".nav-content").removeClass("active");
+  $(".body-bg").removeClass("active");
+  $("#search").removeClass("active");
+  if (window.matchMedia("(max-width: 1023px)").matches) {
+    $(".default-nav-wrapper").removeClass("active");
+    $("#nav-icon1").removeClass("open");
+  }
+});
+
+$(document).ready(function () {
+  const accordianWrapper = $(".accor-wrapper");
+  const accordianHeadContent = $(".accor-head-content");
+  const accordianPara = $(".accor-content > .txtP-16-400");
+  accordianWrapper.each(function (i) {
+    $(this).on("click", function () {
+      $(accordianPara[i]).toggleClass("truncate-2");
+      $(accordianHeadContent[i]).toggleClass("accor-open");
+    });
+  });
+});
